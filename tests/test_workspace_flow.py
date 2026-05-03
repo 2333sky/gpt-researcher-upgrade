@@ -5,6 +5,7 @@ from gptr_upgrade.checkpoints import Checkpoint, CheckpointStore
 from gptr_upgrade.memory import MemoryEntry, MemoryStore
 from gptr_upgrade.queue.models import TopicBlock
 from gptr_upgrade.queue.store import QueueStore
+from gptr_upgrade.sources import SourceRecord, SourceStore
 from gptr_upgrade.workspace.models import ResearchProject
 from gptr_upgrade.workspace.store import WorkspaceStore
 
@@ -22,6 +23,9 @@ def test_workspace_flow(tmp_path: Path) -> None:
     queue_path = QueueStore(project_dir).save([
         TopicBlock(block_id="topic_01", title="Queues"),
     ])
+    source_path = SourceStore(project_dir).save([
+        SourceRecord(source_id="source_01", url="https://example.com", title="Example"),
+    ])
     artifact_path = ArtifactStore(project_dir).save([
         ArtifactRecord(artifact_id="artifact_01", artifact_type="report", path="reports/v1.md"),
     ])
@@ -34,6 +38,7 @@ def test_workspace_flow(tmp_path: Path) -> None:
 
     assert (project_dir / "project.json").exists()
     assert queue_path.exists()
+    assert source_path.exists()
     assert artifact_path.exists()
     assert checkpoint_path.exists()
     assert memory_path.exists()

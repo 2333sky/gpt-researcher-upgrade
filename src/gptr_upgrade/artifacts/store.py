@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import json
 from dataclasses import asdict
 from pathlib import Path
+
+from gptr_upgrade.common import load_json, save_json
 
 from .models import ArtifactRecord
 
@@ -14,8 +15,14 @@ class ArtifactStore:
     def artifacts_path(self) -> Path:
         return self.project_dir / "artifacts.json"
 
+    def list(self) -> list[ArtifactRecord]:
+        payload = load_json(self.artifacts_path(), [])
+        return [ArtifactRecord(**item) for item in payload]
+
     def save(self, artifacts: list[ArtifactRecord]) -> Path:
-        path = self.artifacts_path()
-        payload = [asdict(artifact) for artifact in artifacts]
-        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-        return path
+        return save_json(self.artifacts_path(), [asdict(artifact) for artifact in artifacts])
+
+    def append(self, artifact: ArtifactRecord) -> Path:
+        artifacts = self.list()
+        artifacts.append(artifact)
+        return self.save(artifacts)

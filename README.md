@@ -1,150 +1,205 @@
 # GPT Researcher Upgrade
 
-> Evolving GPT Researcher from a one-shot report generator into a continuous research workspace.
+> A local-first CLI research workspace for structured, project-based research workflows.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-## Overview
+## What this is
 
-This repository captures a concrete upgrade path for GPT Researcher inspired by one specific class of lessons from DeepTutor: not tutoring UX, but **workflow organization for long-running, cumulative research**.
+This repository now ships a **usable MVP product**:
 
-The core thesis is simple:
+- installable Python package
+- CLI entrypoint: `gptr`
+- local project workspace management
+- topic queue tracking
+- checkpoint management
+- source tracking
+- artifact tracking
+- project memory tracking
+- Markdown workspace export
 
-- **Keep** GPT Researcher's strong research-quality pipeline
-  - editor
-  - reviewer
-  - revisor
-  - writer
-  - publisher
-- **Add** the missing workspace layer around it
-  - resumable projects
-  - dynamic topic queues
-  - artifact persistence
-  - project memory
-  - human checkpoints
+It is designed for people who want to organize research as a durable project instead of a one-shot chat.
 
-This repo is currently a **proposal + prototype seed**.
+## Product status
 
-## Why this matters
+This repository now provides a **working local-first MVP**.
 
-GPT Researcher is already good at generating research outputs.
-What it lacks is a strong model for:
+Right now, it is a real product for organizing and operating a research workspace:
+- create projects
+- track research topics
+- manage checkpoints
+- store sources and artifacts
+- record durable memory
+- export project snapshots to Markdown
 
-- continuing a research project over time
-- preserving intermediate artifacts
-- letting users steer the workflow at key stages
-- reusing topic knowledge across repeated runs
+What it does **not yet** include is automatic integration with GPT Researcher's existing retriever / writer execution pipeline. That is a next-stage integration target, not a blocker for the current MVP.
 
-This project explores how to close that gap without turning GPT Researcher into a general-purpose assistant or tutoring product.
-
-## Goals
-
-- upgrade GPT Researcher into a continuous research workspace
-- preserve its high-quality multi-agent report pipeline
-- add reusable project structure and research artifacts
-- support more exploratory research via dynamic topic queues
-- make collaboration checkpoints first-class
-
-## Non-goals
-
-- do not turn GPT Researcher into a generic chatbot
-- do not turn it into a tutoring platform
-- do not sacrifice rigor for broad feature sprawl
-
-## Repository structure
-
-```text
-.
-├── README.md
-├── LICENSE
-├── pyproject.toml
-├── docs/
-│   ├── prd.md
-│   ├── technical-design.md
-│   ├── roadmap.md
-│   ├── decision-log.md
-│   └── example-schemas.md
-├── tests/
-└── src/
-    └── gptr_upgrade/
-        ├── artifacts/
-        ├── capabilities/
-        ├── checkpoints/
-        ├── memory/
-        ├── queue/
-        └── workspace/
-```
-
-## Documentation
-
-- `docs/prd.md` — product requirements draft
-- `docs/technical-design.md` — architecture and module design
-- `docs/roadmap.md` — phased implementation roadmap
-- `docs/decision-log.md` — major decisions and rationale
-- `docs/example-schemas.md` — example data contracts
-
-## Prototype scope
-
-The initial `src/` prototype is intentionally small.
-It exists to make the proposal more concrete by defining:
-
-- workspace/project metadata
-- capability contracts
-- topic queue schemas
-- artifact/checkpoint/memory persistence skeletons
-
-This is **not yet a full implementation of GPT Researcher**.
-It is the seed of a future implementation path.
-
-## Run the prototype demo
+## Install
 
 ```bash
-cd /path/to/gpt-researcher-upgrade
-PYTHONPATH=src python3 src/gptr_upgrade/demo.py
+git clone https://github.com/2333sky/gpt-researcher-upgrade.git
+cd gpt-researcher-upgrade
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
 ```
 
-This creates a minimal demo workspace under `./workspace/` (gitignored).
+## Quick start
+
+### 1. Create a project
+
+```bash
+gptr init --title "AI Agent Infrastructure Trends" --project-id ai-agent-infra
+```
+
+### 2. Add topics
+
+```bash
+gptr add-topic ai-agent-infra --title "Memory architectures" --priority 0.9
+gptr add-topic ai-agent-infra --title "Agent orchestration patterns" --priority 0.8
+```
+
+### 3. Add sources
+
+```bash
+gptr add-source ai-agent-infra \
+  --url "https://example.com/post" \
+  --title "Example Post" \
+  --publisher "Example" \
+  --source-type web \
+  --credibility medium
+```
+
+### 4. Add a checkpoint
+
+```bash
+gptr add-checkpoint ai-agent-infra \
+  --kind outline_approval \
+  --prompt "Approve the initial outline before deep research?" \
+  --option approve \
+  --option revise
+```
+
+### 5. Export a Markdown snapshot
+
+```bash
+gptr export ai-agent-infra
+```
+
+## Commands
+
+### Project commands
+
+```bash
+gptr init --title "Project Title" --project-id my-project
+gptr projects
+gptr show my-project
+gptr set-stage my-project --stage research
+```
+
+### Topic queue commands
+
+```bash
+gptr add-topic my-project --title "Topic" --priority 0.8
+gptr list-topics my-project
+gptr move-topic my-project topic_xxxxxxxx --status researching
+gptr move-topic my-project topic_xxxxxxxx --status done
+```
+
+### Source commands
+
+```bash
+gptr add-source my-project --url https://example.com --title "Example" --publisher "Example"
+gptr list-sources my-project
+```
+
+### Checkpoint commands
+
+```bash
+gptr add-checkpoint my-project --kind outline_approval --prompt "Approve?"
+gptr list-checkpoints my-project
+gptr resolve-checkpoint my-project checkpoint_xxxxxxxx --status approved --response "Looks good"
+```
+
+### Artifact commands
+
+```bash
+gptr add-artifact my-project --type report --path reports/v1.md --summary "Initial draft"
+gptr list-artifacts my-project
+```
+
+### Memory commands
+
+```bash
+gptr add-memory my-project --level project --summary "Prefer stronger source review" --confidence high
+gptr list-memory my-project
+```
+
+### Other commands
+
+```bash
+gptr capabilities
+gptr export my-project --output snapshot.md
+gptr demo
+```
+
+## Workspace layout
+
+By default, data is stored under `./workspace`:
+
+```text
+workspace/
+  projects/
+    <project_id>/
+      project.json
+      queue.json
+      sources.json
+      checkpoints.json
+      artifacts.json
+      memory/
+        entries.json
+      reports/
+      drafts/
+      traces/
+      exports/
+      notes.md
+```
+
+You can override the root with:
+
+```bash
+gptr --root /path/to/workspace init --title "Project"
+```
+
+or via environment variable:
+
+```bash
+export GPTR_WORKSPACE_ROOT=/path/to/workspace
+```
 
 ## Run tests
 
 ```bash
-cd /path/to/gpt-researcher-upgrade
-PYTHONPATH=src pytest
+source .venv/bin/activate
+pytest -q
 ```
 
-## Initial implementation themes
+## Repository contents
 
-### 1. Research Workspace
-Persist project state and research artifacts across runs.
+- `src/gptr_upgrade/` — product code
+- `tests/` — automated tests
+- `docs/` — background design and schema docs
 
-### 2. Capability Registry
-Turn report modes into explicit capabilities with policies.
+## Roadmap
 
-### 3. Dynamic Topic Queue
-Support exploratory research before report convergence.
+The current MVP already works as a local-first research workspace.
+Next likely steps:
 
-### 4. Human Checkpoints
-Add review/approval points for outline, sources, and output intent.
-
-### 5. Project Memory
-Retain durable knowledge at the project/topic/source-trust levels.
-
-## GitHub issues
-
-This repo already contains initial implementation slices as GitHub issues:
-
-- Phase 1: Research Workspace and artifact persistence
-- Phase 2: Capability Registry and tool profiles
-- Phase 3: Dynamic Topic Queue
-- Phase 4: Human Checkpoints and Project Memory
-
-## Suggested next steps
-
-- refine the PRD
-- expand the prototype under `src/`
-- convert roadmap phases into implementation milestones
-- add tests and example fixtures
-- validate the design against real GPT Researcher flows
+- add richer state transitions
+- add note-taking helpers
+- add import/export adapters
+- integrate with real research engines
+- add API and TUI/web frontends
 
 ## License
 

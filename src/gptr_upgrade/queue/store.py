@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import json
 from dataclasses import asdict
 from pathlib import Path
+
+from gptr_upgrade.common import load_json, save_json
 
 from .models import TopicBlock
 
@@ -14,9 +15,14 @@ class QueueStore:
     def queue_path(self) -> Path:
         return self.base_dir / "queue.json"
 
+    def list(self) -> list[TopicBlock]:
+        payload = load_json(self.queue_path(), [])
+        return [TopicBlock(**item) for item in payload]
+
     def save(self, blocks: list[TopicBlock]) -> Path:
-        path = self.queue_path()
-        path.parent.mkdir(parents=True, exist_ok=True)
-        payload = [asdict(block) for block in blocks]
-        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-        return path
+        return save_json(self.queue_path(), [asdict(block) for block in blocks])
+
+    def append(self, block: TopicBlock) -> Path:
+        blocks = self.list()
+        blocks.append(block)
+        return self.save(blocks)

@@ -1,7 +1,3 @@
-"""Prototype package for GPT Researcher upgrade experiments."""
+"""Local-first research workspace package."""
 
-__all__ = [
-    "workspace",
-    "capabilities",
-    "queue",
-]
+__version__ = "0.2.0"

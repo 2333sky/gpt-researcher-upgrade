@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import json
 from dataclasses import asdict
 from pathlib import Path
+
+from gptr_upgrade.common import load_json, save_json
 
 from .models import Checkpoint
 
@@ -14,8 +15,14 @@ class CheckpointStore:
     def checkpoints_path(self) -> Path:
         return self.project_dir / "checkpoints.json"
 
+    def list(self) -> list[Checkpoint]:
+        payload = load_json(self.checkpoints_path(), [])
+        return [Checkpoint(**item) for item in payload]
+
     def save(self, checkpoints: list[Checkpoint]) -> Path:
-        path = self.checkpoints_path()
-        payload = [asdict(checkpoint) for checkpoint in checkpoints]
-        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-        return path
+        return save_json(self.checkpoints_path(), [asdict(checkpoint) for checkpoint in checkpoints])
+
+    def append(self, checkpoint: Checkpoint) -> Path:
+        checkpoints = self.list()
+        checkpoints.append(checkpoint)
+        return self.save(checkpoints)
