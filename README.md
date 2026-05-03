@@ -57,15 +57,20 @@ This project explores how to close that gap without turning GPT Researcher into 
 .
 ├── README.md
 ├── LICENSE
+├── pyproject.toml
 ├── docs/
 │   ├── prd.md
 │   ├── technical-design.md
 │   ├── roadmap.md
 │   ├── decision-log.md
 │   └── example-schemas.md
+├── tests/
 └── src/
     └── gptr_upgrade/
+        ├── artifacts/
         ├── capabilities/
+        ├── checkpoints/
+        ├── memory/
         ├── queue/
         └── workspace/
 ```
@@ -86,9 +91,26 @@ It exists to make the proposal more concrete by defining:
 - workspace/project metadata
 - capability contracts
 - topic queue schemas
+- artifact/checkpoint/memory persistence skeletons
 
 This is **not yet a full implementation of GPT Researcher**.
 It is the seed of a future implementation path.
+
+## Run the prototype demo
+
+```bash
+cd /path/to/gpt-researcher-upgrade
+PYTHONPATH=src python3 src/gptr_upgrade/demo.py
+```
+
+This creates a minimal demo workspace under `./workspace/` (gitignored).
+
+## Run tests
+
+```bash
+cd /path/to/gpt-researcher-upgrade
+PYTHONPATH=src pytest
+```
 
 ## Initial implementation themes
 

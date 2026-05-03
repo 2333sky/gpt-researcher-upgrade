@@ -32,25 +32,50 @@
 }
 ```
 
+## `artifacts.json`
+
+```json
+[
+  {
+    "artifact_id": "artifact_01",
+    "artifact_type": "report",
+    "path": "reports/v1.md",
+    "summary": "First draft report placeholder",
+    "tags": ["draft"]
+  }
+]
+```
+
+## `checkpoints.json`
+
+```json
+[
+  {
+    "checkpoint_id": "cp_01",
+    "kind": "outline_approval",
+    "status": "pending",
+    "prompt": "Approve the initial outline before deeper research?",
+    "options": ["approve", "revise"]
+  }
+]
+```
+
+## `memory/entries.json`
+
+```json
+[
+  {
+    "memory_id": "mem_01",
+    "level": "project",
+    "summary": "Prefer stronger source review before publishing.",
+    "confidence": "medium"
+  }
+]
+```
+
 ## `source_index.jsonl`
 
 ```json
 {"url":"https://example.com/post-1","title":"Example Post","publisher":"Example","source_type":"web","retrieval_time":"2026-05-03T17:10:00Z","credibility":"medium"}
 {"url":"https://arxiv.org/abs/1234.5678","title":"Example Paper","publisher":"arXiv","source_type":"paper","retrieval_time":"2026-05-03T17:12:00Z","credibility":"high"}
-```
-
-## `evidence_map.json`
-
-```json
-{
-  "claims": [
-    {
-      "claim_id": "claim_001",
-      "text": "Dynamic research queues improve exploratory topic coverage.",
-      "supporting_sources": ["src_01", "src_04"],
-      "conflicting_sources": [],
-      "confidence": "medium"
-    }
-  ]
-}
 ```
