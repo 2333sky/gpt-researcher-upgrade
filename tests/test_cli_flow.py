@@ -28,3 +28,20 @@ def test_cli_happy_path(tmp_path: Path) -> None:
     export_path = Path(exported.stdout.strip())
     assert export_path.exists()
     assert "test-project.md" in export_path.name
+
+
+def test_cli_ingest_topic(tmp_path: Path) -> None:
+    result = run_cli(
+        tmp_path,
+        "ingest-topic",
+        "--title",
+        "AI agent infrastructure with memory architectures and orchestration patterns",
+        "--project-id",
+        "ai-agent-infra",
+    )
+    assert "Scaffolded project: ai-agent-infra" in result.stdout
+    export_path = tmp_path / "workspace" / "projects" / "ai-agent-infra" / "exports" / "ai-agent-infra.md"
+    assert export_path.exists()
+    contents = export_path.read_text(encoding="utf-8")
+    assert "## Topics" in contents
+    assert "## Checkpoints" in contents

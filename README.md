@@ -52,6 +52,12 @@ python -m pip install -e '.[dev]'
 gptr init --title "AI Agent Infrastructure Trends" --project-id ai-agent-infra
 ```
 
+Or scaffold a project directly from a research topic:
+
+```bash
+gptr ingest-topic --title "AI agent infrastructure with memory architectures and orchestration patterns" --project-id ai-agent-infra
+```
+
 ### 2. Add topics
 
 ```bash

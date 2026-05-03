@@ -12,6 +12,7 @@ from gptr_upgrade.exporter import export_markdown
 from gptr_upgrade.memory import MemoryEntry, MemoryStore
 from gptr_upgrade.queue.models import TopicBlock
 from gptr_upgrade.queue.store import QueueStore
+from gptr_upgrade.scaffold import scaffold_project
 from gptr_upgrade.sources import SourceRecord, SourceStore
 from gptr_upgrade.workspace.models import ResearchProject
 from gptr_upgrade.workspace.store import WorkspaceStore
@@ -213,22 +214,27 @@ def cmd_export(args: argparse.Namespace) -> None:
     print(output)
 
 
+def cmd_ingest_topic(args: argparse.Namespace) -> None:
+    root = workspace_root(args)
+    project_id, project_dir = scaffold_project(root, title=args.title, project_id=args.project_id, capability=args.capability, profile=args.profile)
+    export_path = export_markdown(root, project_id, None)
+    print(f"Scaffolded project: {project_id}")
+    print(project_dir)
+    print(f"Export: {export_path}")
+
+
 def cmd_demo(args: argparse.Namespace) -> None:
     root = workspace_root(args)
     demo_args = argparse.Namespace(
         root=str(root),
+        title="AI Agent Infrastructure Trends with memory architectures and orchestration patterns",
         project_id="demo-ai-agents",
-        title="AI Agent Infrastructure Trends",
         capability="deep_research",
         profile="balanced",
     )
-    cmd_init(demo_args)
-    cmd_add_topic(argparse.Namespace(root=str(root), project_id="demo-ai-agents", title="Agent orchestration patterns", priority=0.8, source_reason="initial_plan"))
-    cmd_add_topic(argparse.Namespace(root=str(root), project_id="demo-ai-agents", title="Memory architectures", priority=0.7, source_reason="initial_plan"))
+    cmd_ingest_topic(demo_args)
     cmd_add_source(argparse.Namespace(root=str(root), project_id="demo-ai-agents", url="https://example.com/agents", title="Example Agents Post", publisher="Example", source_type="web", credibility="medium", summary="Seed source"))
-    cmd_add_checkpoint(argparse.Namespace(root=str(root), project_id="demo-ai-agents", kind="outline_approval", prompt="Approve the initial outline before deeper research?", option=["approve", "revise"]))
     cmd_add_artifact(argparse.Namespace(root=str(root), project_id="demo-ai-agents", type="report", path="reports/v1.md", summary="Initial draft report", tag=["draft"]))
-    cmd_add_memory(argparse.Namespace(root=str(root), project_id="demo-ai-agents", level="project", summary="Prefer stronger source review before publishing.", confidence="medium"))
     export_path = export_markdown(root, "demo-ai-agents", None)
     print(f"Demo export: {export_path}")
 
@@ -247,6 +253,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("projects")
     p.set_defaults(func=cmd_projects)
+
+    p = sub.add_parser("ingest-topic")
+    p.add_argument("--title", required=True)
+    p.add_argument("--project-id")
+    p.add_argument("--capability", default="deep_research")
+    p.add_argument("--profile", default="balanced")
+    p.set_defaults(func=cmd_ingest_topic)
 
     p = sub.add_parser("show")
     p.add_argument("project_id")
