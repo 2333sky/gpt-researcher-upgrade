@@ -4,7 +4,12 @@
 .env
 .venv/
 __pycache__/
+.pytest_cache/
 node_modules/
 dist/
+build/
 workspace/
+research_projects/
+.local-test-runs/
+outputs/
 *.egg-info/
